@@ -4,13 +4,13 @@
 #INCLUDE "Totvs.ch"
 #INCLUDE "FWMVCDef.ch"
 
-/*---- MVC - Modelo X - Usa 3 telas e 3 ou mais tabelas  ---------*/  
+/*---- MVC - Modelo X  ---------*/  
 
 //Variaveis Estaticas 
 Static cTitulo   := "ML1 x ML2 x ML3"
-Static cTabPai   := "ML1" // Descrição do Produto
-Static cTabFilho := "ML2" // Dados Adicionais do Produto
-Static cTabNeto  := "ML3" // Amarração Produto x Fornecedor
+Static cTabPai   := "ML1" // Fabricantes
+Static cTabFilho := "ML2" // Veiculos
+Static cTabNeto  := "ML3" // Motoristas
 
 /*---- FUNCTION ---------------------------------------------------------------------*/
 User Function xMVC03()
@@ -19,7 +19,7 @@ User Function xMVC03()
 	Local   oBrowse := Nil
 	Private aRotina := {}
 
-	//Definição do Menu
+	//DefiniÃ§Ã£o do Menu
 	aRotina := MenuDef()
 
 	//Instanciando o Browse
@@ -54,8 +54,8 @@ Static Function ModelDef()
 	Local aRelFilho   := {}
 	Local aRelNeto    := {}
 	Local oModel 	  := Nil
-	Local bPre		  := Nil
-	Local bPos		  := Nil
+	Local bPre	  := Nil
+	Local bPos	  := Nil
 	Local bCommit     := Nil 
 	Local bCancel     := Nil 
 
@@ -66,16 +66,16 @@ Static Function ModelDef()
 	oModel:AddGrid("ML3DETAIL","ML2DETAIL"   , oStruNeto)
 	oModel:SetPrimaryKey({})
 
-	//RelaçãoVa Pai/Filho (ML1/ML2)
+	//RelaÃ§Ã£oVa Pai/Filho (ML1/ML2)
 	oStruFilho:SetProperty("ML2_CODFAB", MODEL_FIELD_OBRIGAT, .F.)
 	aAdd(aRelFilho, {"ML2_FILIAL","FWxFilial('ML2')"})
 	aAdd(aRelFilho, {"ML2_CODFAB", "ML1_CODFAB"})
 	oModel:SetRelation("ML2DETAIL",aRelFilho, ML2->((IndexKey(1))))
 
-	// Para colocar filtros na consulta padrão da tabela ML2, deve-se
-	// incluir através do Configurador 
+	// Para colocar filtros na consulta padrÃ£o da tabela ML2, deve-se
+	// incluir atravÃ©s do Configurador 
 
-	//Relação Filho/Neto (ML2/ML3)
+	//RelaÃ§Ã£o Filho/Neto (ML2/ML3)
 	aAdd(aRelNeto, {"ML3_FILIAL", "FwXFilial('ML3')"})
 	aAdd(aRelNeto, {"ML3_CODVEI", "ML2_CODVEI"})
 	oModel:SetRelation("ML3DETAIL",aRelNeto, ML3->((IndexKey(1))))
@@ -96,7 +96,7 @@ Static Function ViewDef()
 	Local oStruNeto  := FwFormStruct(2, cTabNeto)
 	Local oView      
 
-	//Criação das Views do Cadastro
+	//CriaÃ§Ã£o das Views do Cadastro
 	oView := FWFormView():New()
 	oView:SetModel(oModel)
 	oView:AddField("VIEW_ML1", oStruPai  , "ML1MASTER")
@@ -125,13 +125,13 @@ Return oView
 
 
 
-// Gatilho para preenchimento da descrição do Veículo
+// Gatilho para preenchimento da descriÃ§Ã£o do VeÃ­culo
 User Function xGatMVC1()
 
 Local oModel    := FWModelActive()
 Local cDesc     := Posicione("ML2", 2, FwXFilial("ML2") + ML2->ML2_CODVEI , "ML2_DESCRI") 
 
-//Fazendo o filtro na grid, com o código do fabricante
+//Fazendo o filtro na grid, com o cÃ³digo do fabricante
 oModel:GetModel('ML2DETAIL'):SetLoadFilter(, "ML2_CODFAB ='" + "" + "' " ) 
 oModel:SetValue('ML2DETAIL','ML2_DESCRI',cDesc)
 
